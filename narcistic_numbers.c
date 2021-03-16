@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 
 char* converter(char numbers[], int m, int base, int tobase){
