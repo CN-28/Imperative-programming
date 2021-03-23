@@ -32,5 +32,6 @@ int main(){
         sum += Arr[j];
     printf("%d", sum);
 
+    free(Arr);
     return 0;
 }
