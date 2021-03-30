@@ -58,6 +58,8 @@ int main(){
     for (int j = 0; j < i; j++)
         printf("%d ", t2[j]);
 
-
+    free(t1);
+    free(t2);
+    free(temp);
     return 0;
 }
