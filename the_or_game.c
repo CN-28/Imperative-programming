@@ -81,5 +81,6 @@ int main(){
     free(T);
     free(Arr);
     free(temp);
+    free(count);
     return 0;
 }
