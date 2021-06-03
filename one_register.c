@@ -2,14 +2,15 @@
 #include <stdlib.h>
 
 
-void solve(int Arr[], char str[], int s, int t, int ind, int len, int isDone[], char result[], int length[]){
+void solve(char str[], long long int s, int t, int ind, int len, int isDone[], char result[], int length[]){
     if (ind > length[0])
         return;
     if (s == t){
         int isGreater = 0;
-        for (int i = 0; i < 29; i++){
+        for (int i = 0; i < 30; i++){
             if (isDone[0] == 0){
-                if (str[i] != '0')
+                result[i] = '0';
+                if (str[i] == '+' || str[i] == '*')
                     result[i] = str[i];
             }
             else{
@@ -23,17 +24,18 @@ void solve(int Arr[], char str[], int s, int t, int ind, int len, int isDone[], 
         }
         int len1 = 0;
         int len2 = 0;
-        for (int i = 0; i < 29; i++){
+        for (int i = 0; i < 30; i++){
             if (str[i] == '*' || str[i] == '+')
                 len1++;
             if (result[i] == '*' || result[i] == '+')
                 len2++;
-        length[0] = len2;
         }
+        length[0] = len2;
         if (len1 < len2 || (len1 == len2 && isGreater == 1)){
             length[0] = len1;
-            for (int i = 0; i < 29; i++){
-                if (str[i] != '0')
+            for (int i = 0; i < 30; i++){
+                result[i] = '0';
+                if (str[i] == '*' || str[i] == '+')
                     result[i] = str[i];
             }  
         }
@@ -46,11 +48,10 @@ void solve(int Arr[], char str[], int s, int t, int ind, int len, int isDone[], 
 
     int temp = 0;
     if (s < t){
-        Arr[ind] = 0;
         str[ind] = '+';
         s *= 2;
         temp = 1;
-        solve(Arr, str, s, t, ind + 1, len, isDone, result, length);
+        solve(str, s, t, ind + 1, len, isDone, result, length);
     }
     if (temp){
         s /=2;
@@ -59,11 +60,10 @@ void solve(int Arr[], char str[], int s, int t, int ind, int len, int isDone[], 
          
     temp = 0;
     if (s < t){
-        Arr[ind] = 1;
         str[ind] = '*';
         s *= s;
         temp = 1;
-        solve(Arr, str, s, t, ind + 1, len, isDone, result, length);
+        solve(str, s, t, ind + 1, len, isDone, result, length);
     }
     if (temp){
         str[ind] = '0';
@@ -78,17 +78,32 @@ int main(){
     scanf("%d%d", &s, &t);
 
 
-    int Arr[29] = {-1};
-    char str[29] = {'0'};
+    char str[30] = {'0'};
     int temp = 0;
     int isDone[1] = {0};
-    char result[29];
+    char result[30] = {'0'};
     int length[1];
     length[0] = 30;
-    int x = s;
+    long long int x = s;
     int cnt = 0;
+    
+    if (t == 0 && s != 0){
+        printf("-");
+        return 0;
+    }
+    if (s == 0 && t == 0 || s == t)
+        return 0;
+    if (s == 0 && t != 0){
+        printf("NO");
+        return 0;
+    }
+    if (t == 1 && s != 0){
+        printf("/");
+        return 0;
+    }
+    //podpunkt 1
     if (t % 2 == 1){
-        while (x < t && cnt < 29){
+        while (x < t && cnt < 30){
             x *= x;
             result[cnt] = '*';
             cnt++;
@@ -99,17 +114,67 @@ int main(){
             temp = 1;
         }
     }
-    else{
-        solve(Arr, str, s, t, 0, 29, isDone, result, length);
-        for (int i = 0; i < length[0]; i++){
-            if (result[i] == '+' || result[i] == '*'){
-                printf("%c", result[i]);
-                temp = 1;
+    //podpunkt 2
+    else if (t % s != 0){
+        x = 2;
+        if (x == t){
+            printf("/+");
+            temp = 1;
+        }
+        else{
+            solve(str, x, t, 0, 30, isDone, result, length);
+            for (int i = 0; i < length[0] ; i ++){
+                if (result[i] == '+' || result[i] == '*'){
+                    temp = 1;
+                    if (i == 0)
+                        printf("/+");
+                    printf("%c", result[i]);
+                }
+                else
+                    break;
             }
-            else
-                break;
         }
     }
+    //brute force
+    else{
+        int tempLength = 0;
+        solve(str, x, t, 0, 30, isDone, result, length);
+        for (int i = 0; i < 30; i++)
+            str[i] = '0';
+        tempLength = length[0];
+        int tempRes[30];
+        int firstDone = 0;
+        if (isDone[0] != 0){
+            firstDone = 1;
+            for (int i = 0; i < 30; i++)
+                tempRes[i] = result[i];
+        }
+        solve(str, 1, t, 0, 30, isDone, result, length);
+        if (length[0] + 1 < tempLength || (firstDone == 0 && isDone[0] != 0)){
+            for (int i = 0; i < length[0] ; i ++){
+                if (result[i] == '+' || result[i] == '*'){
+                    temp = 1;
+                    if (i == 0)
+                        printf("/");
+                    printf("%c", result[i]);
+                }
+                else
+                    break;
+            }
+        }
+        else{
+            for (int i = 0; i < tempLength ; i ++){
+                if (tempRes[i] == '+' || tempRes[i] == '*'){
+                    temp = 1;
+                    printf("%c", tempRes[i]);
+                }
+                else
+                    break; 
+            }
+        }    
+    }
+
+
     if (!temp)
         printf("NO");
     return 0;
